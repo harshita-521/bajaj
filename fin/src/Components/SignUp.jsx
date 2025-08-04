@@ -12,7 +12,7 @@ function SignUp() {
 
     const signup = async (data) => {
         try {
-            const response = await api.post('/register', {
+            const response = await api.post('/user/register', {
                  fname: data.fname,
       lname: data.lname,
       userName: data.userName,

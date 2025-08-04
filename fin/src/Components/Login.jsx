@@ -18,7 +18,7 @@ function Login() {
 
   const login = async (data) => {
   try {
-    const response = await api.post('/login', {
+    const response = await api.post('/user/login', {
        userName: data.userName,
   password: data.password
     }); 
@@ -49,7 +49,7 @@ function Login() {
               <input
                 type='text'
                 placeholder='Enter your username'
-                {...register("username", {
+                {...register("userName", {
                   required: true,
                   minLength: 3
                 })}
