@@ -30,8 +30,11 @@ export const chatSlice = createSlice({
         setChatHistory: (state, action) => {
             state.chatHistory = action.payload;
         },
+        resetChatState: (state) => {
+            return initialState;
+        },
     },
 }) ; 
 
-export const { setchatUserName, setActivePolicyName, addChatMessage, clearChatHistory, setChatHistory } = chatSlice.actions;
+export const { setchatUserName, setActivePolicyName, addChatMessage, clearChatHistory, setChatHistory, resetChatState } = chatSlice.actions;
 export default chatSlice.reducer;

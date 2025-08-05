@@ -37,9 +37,12 @@ export const userSlice = createSlice({
         },
         clearPolicy: (state) => {
             state.policies = [];
+        },
+        resetUserState: (state) => {
+            return initialState;
         }
     }
 
 }); 
-export const { setUserName, setUserId, setEmail, addPolicy, removePolicy, clearPolicy } = userSlice.actions;
+export const { setUserName, setUserId, setEmail, addPolicy, removePolicy, clearPolicy, resetUserState } = userSlice.actions;
 export default userSlice.reducer;

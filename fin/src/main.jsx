@@ -8,8 +8,9 @@ import Layout from './Layout.jsx'
 import Landing from './Components/Landing.jsx'
 import Login from './Components/Login.jsx'
 import SignUp from './Components/SignUp.jsx'
-import {store} from './store/store.js'
-import {Provider} from 'react-redux' 
+import { store, persistor } from './store/store.js'
+import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/integration/react' 
 
 
 const router=createBrowserRouter([
@@ -38,10 +39,24 @@ const router=createBrowserRouter([
 ])
 
 
+// Loading component for PersistGate
+const PersistLoading = () => (
+  <div style={{ 
+    display: 'flex', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    height: '100vh',
+    backgroundColor: '#1a1a1a',
+    color: 'white'
+  }}>
+    Loading...
+  </div>
+);
+
 createRoot(document.getElementById('root')).render(
   <Provider store={store}> 
-  
-    <RouterProvider router={router}/>
-
+    <PersistGate loading={<PersistLoading />} persistor={persistor}>
+      <RouterProvider router={router}/>
+    </PersistGate>
   </Provider>
 )
