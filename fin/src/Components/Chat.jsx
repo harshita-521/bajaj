@@ -298,6 +298,7 @@ useEffect(() => {
         console.error("Error fetching chat history:", err);
       }
     }
+    //this is a change 
   };
 
   fetchChatHistory();
