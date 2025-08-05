@@ -3,11 +3,16 @@
     margin: 0;
     padding: 0;
     gap: 6px;
+    
 }
-
+.header{
+  top: 50px;
+}
 
 .right {
     height: 100vh;
+    position: relative;
+    top: 0px;
     width: 94vw;
     margin: 0;
     padding: 0;

@@ -421,6 +421,7 @@ const StructuredResponse = ({ parsedContent }) => {
 };
   return (
     <div className='all'>
+     
       <div className={`sideBar ${sidebarOpen ? 'sidebar-open' : 'sidebar-close'}`}>
         <h2>
           Policy List 
@@ -468,7 +469,7 @@ const StructuredResponse = ({ parsedContent }) => {
 
 
       <div className="right">
-        <Header />
+        {/* <Header /> */}
         <div className="chat_container">
 
           <div className="messages-area">
