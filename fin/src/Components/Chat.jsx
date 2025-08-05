@@ -288,17 +288,6 @@ dispatch(setActivePolicyName(policyList[0].policyName , policyList[0].policyId ,
         <h2>
           Policy List 
         </h2>
-        <div className="create_policy">
-
-          <div className="leftTool">
-              <button onClick={()=>setUploadModalOpen(true)}><Upload/> Upload New Policy</button>
-            </div>
-           <FileUploadModal
-        isOpen={uploadModalOpen}
-        onClose={() => setUploadModalOpen(false)}
-        onUpload={handleFileUpload}
-      />
-        </div>
         <div className="sidebar-content">
 
            {
@@ -367,7 +356,9 @@ dispatch(setActivePolicyName(policyList[0].policyName , policyList[0].policyId ,
             />
 
             <div className="tools">
-            
+            <div className="leftTool">
+              <button onClick={()=>setUploadModalOpen(true)}><Upload/></button>
+            </div>
             <div className="rightTool">
               <button
                onClick={handleSendMessage}
@@ -378,7 +369,11 @@ dispatch(setActivePolicyName(policyList[0].policyName , policyList[0].policyId ,
             </div>
             </div>
 
-            
+             <FileUploadModal
+        isOpen={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+        onUpload={handleFileUpload}
+      />
           </div>
           
           
