@@ -3,7 +3,7 @@
     margin: 0;
     padding: 0;
     gap: 6px;
-    
+    height: 94vh;
 }
 .header{
   top: 50px;
@@ -30,6 +30,10 @@
     flex-direction: column;
     height: calc(100vh - 50px); /* Account for header height */
     overflow: hidden;
+
+        position: relative;
+    bottom: 0;
+    top: 50px;
 }
 
 
@@ -106,17 +110,6 @@
 
 }
 
-.side_opener button {
-    background: transparent;
-    width: 5vw;
-    height: 100vh;
-    border: none;
-    outline: none;
-     /* background: rgba(255, 255, 255, 0.02); */
-    /* backdrop-filter: blur(10px); */
-    /* border: 1px solid rgba(255, 255, 255, 0.2); */
-    /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); */
-}
 
 .bg_spline {
      position: fixed;
@@ -130,15 +123,30 @@
 
 .sidebar-open{
     width:30vw;
+    animation: opening 0.2s ease 1 normal;
+}
+
+@keyframes opening{
+  0% {opacity: 0};
+  100% {opacity: 1}
 }
 
 .sidebar-close{
     width: 0;
+     animation: closing 0.2s ease 1 normal;
+}
+
+@keyframes closing{
+  0% {opacity: 1};
+  100% {opacity: 0}
 }
 
 .sideBar{
     border-left: 3px solid #8847b8;
     border-radius: 10px;
+    position: relative;
+    top: 40px;
+    transition: width 0.5s ease-in-out;
 }
 
 .sideBar h2{
@@ -657,4 +665,17 @@
 /* Adjust message content for structured responses */
 .ai-message .message-content {
   max-width: 85%;
+}
+
+
+
+
+
+.side_opener button {
+    background: transparent;
+    width: 5vw;
+    height: 100vh;
+    border: none;
+    outline: none;
+
 }
