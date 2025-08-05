@@ -5,11 +5,12 @@ import sideBar from '../assets/sideBar.svg';
 import Spline from '@splinetool/react-spline';
 import { X, Upload, Send, Menu, Edit2, Trash2, File, Image, FileText, Music, Video } from 'lucide-react';
 import './Chat.css';
- import api from '../api'; 
+import api from '../api'; 
+import { useDispatch , useSelector } from 'react-redux';
 
  
 function Chat() {
-
+  
   const getFileIcon = (fileName) => {
   const extension = fileName.split('.').pop()?.toLowerCase();
   switch (extension) {

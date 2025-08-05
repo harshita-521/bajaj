@@ -7,9 +7,13 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import api from '../api';
 
 
-
-
+import { useDispatch } from 'react-redux';
+import { setchatUserName } from '../store/slices/chatSlice';
+import {setUserName, setUserId, setEmail }from '../store/slices/userSlice';
 function Login() {
+
+  const dispatch = useDispatch() ; 
+
   const { register, handleSubmit } = useForm();
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -24,7 +28,10 @@ function Login() {
     }); 
 
     console.log("Login successful:", response.data);
-    navigate('/chat');
+    dispatch(setUserName(data.userName));
+    dispatch(setUserId(response.data.userId));
+    dispatch(setEmail(response.data.email));
+    dispatch(setchatUserName(data.userName));
 
   } catch (err) {
     console.error("Login error:", err.response?.data || err.message);

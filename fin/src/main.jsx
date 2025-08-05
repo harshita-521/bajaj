@@ -8,6 +8,8 @@ import Layout from './Layout.jsx'
 import Landing from './Components/Landing.jsx'
 import Login from './Components/Login.jsx'
 import SignUp from './Components/SignUp.jsx'
+import {store} from './store/store.js'
+import {Provider} from 'react-redux' 
 
 
 const router=createBrowserRouter([
@@ -37,7 +39,9 @@ const router=createBrowserRouter([
 
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  <Provider store={store}> 
+  
     <RouterProvider router={router}/>
-  </StrictMode>,
+
+  </Provider>
 )
