@@ -8,7 +8,8 @@ import './Chat.css';
 import api from '../api'; 
 import { useDispatch , useSelector } from 'react-redux';
 import { addPolicy, clearPolicy } from '../store/slices/userSlice';
-import { addListener } from '@reduxjs/toolkit';
+import { addChatMessage, setActivePolicyName, clearChatHistory, setChatHistory } from '../store/slices/chatSlice';
+import Header from './Header';
 
  
 function Chat() {
@@ -47,7 +48,9 @@ function Chat() {
 
   // Call the function when component mounts or userName changes
   useEffect(() => {
+    console.log("UserState:", userState);
     if (userState.userName) {
+      console.log("Fetching user data for:", userState.userName);
       fetchUserData();
     }
   }, [fetchUserData]);
@@ -198,7 +201,7 @@ const FileItem = ({ file, onRename, onDelete }) => {
 
    const [uploadModalOpen,setUploadModalOpen]=useState(false);
 const [sidebarOpen,setSidebarOpen]=useState(false);
-const [messages, setMessages] = useState([]); // TODO: Replace with chat messages from backend
+const [files,setFiles]=useState([]); // Fix: Add missing setFiles state
   const [inputMessage, setInputMessage] = useState('');
 
 
@@ -244,60 +247,184 @@ const handleSendMessage = async () => {
   if (inputMessage.trim()) {
     const userMessage = {
       id: Date.now(),
-      text: inputMessage,
-      sender: 'user',
+      contents: inputMessage,
+      role: 'user',
       timestamp: new Date().toISOString()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    // Add user message to Redux store
+    dispatch(addChatMessage(userMessage));
     setInputMessage('');
 
     try {
-      // 👇 Send message to backend
-      const res = await api.post('/chats', {
-        message: userMessage.text
+      // 👇 Send message to backend with policy information
+      const res = await api.post('/vdb/agent', {
+        userQuery: userMessage.contents,
+        policyId: activePolicyId,
+        indexName: indexName,
+        userId: userId
       });
+      console.log(res)  
+
+      let parsedContent = null;
+      
+      // Try to parse structured content
+      if (res.data.parsedContent) {
+        try {
+          parsedContent = typeof res.data.parsedContent === 'string' 
+            ? JSON.parse(res.data.parsedContent) 
+            : res.data.parsedContent;
+          console.log("Parsed content:", parsedContent);  
+        } catch (err) {
+          console.warn("Could not parse structured content:", err);
+        }
+      }
 
       const aiMessage = {
         id: Date.now() + 1,
-        text: res.data.reply, // assuming reply is in this field
-        sender: 'ai',
+        contents: res.data.reply || res.data.message || res.data.response,
+        parsedContent: parsedContent, // Store structured content
+        role: 'assistant',
         timestamp: new Date().toISOString()
       };
 
-      setMessages(prev => [...prev, aiMessage]);
+      // Add AI response to Redux store
+      dispatch(addChatMessage(aiMessage));
     } catch (err) {
       console.error('Failed to get response from AI backend:', err);
       const errorMessage = {
         id: Date.now() + 1,
-        text: 'Sorry, something went wrong.',
-        sender: 'ai',
+        contents: 'Sorry, something went wrong.',
+        role: 'assistant',
         timestamp: new Date().toISOString()
       };
-      setMessages(prev => [...prev, errorMessage]);
+      // Add error message to Redux store
+      dispatch(addChatMessage(errorMessage));
     }
   }
 };
+const activePolicyName = useSelector(state => state.chat.activePolicyName);
+const activePolicyId = useSelector(state => state.chat.activePolicyId);
+const indexName = useSelector(state => state.chat.indexName);
+const userId = useSelector(state => state.user.userId);
 
+// Fix: Proper useEffect with async function
+useEffect(() => {
+  const fetchChatHistory = async () => {
+    if (activePolicyId && userId) {
+      try {
+        console.log("Fetching chat history with:", activePolicyName, activePolicyId, indexName, userId);
+        
+        const res = await api.post('/user/chats', {
+          policyId: activePolicyId,
+          userId: userId
+        });
+        console.log("Chat history fetched:", res.data);
+        
+        // Update messages state with fetched chat history
+        if (res.data && res.data.messages) {
+          console.log("Setting chat history:", res.data.messages);
+          dispatch(setChatHistory(res.data.messages));
+        } else if (res.data && Array.isArray(res.data)) {
+          console.log("Setting chat history from array:", res.data);
+          dispatch(setChatHistory(res.data));
+        } else {
+          console.log("No messages found in response:", res.data);
+          dispatch(clearChatHistory());
+        }
+
+      } catch (err) {
+        console.error("Error fetching chat history:", err);
+      }
+    }
+  };
+
+  fetchChatHistory();
+  
+
+}, [activePolicyName, activePolicyId, indexName, userId]); // Remove dispatch from dependencies
 
 const policyList = useSelector(state => state.user.policies);
+
+// Fix: Better condition to set active policy
+useEffect(() => {
+  console.log("Policy List updated:", policyList);
+  console.log("Current activePolicyName:", activePolicyName);
+  
+  if (policyList && policyList.length > 0 && (!activePolicyName || activePolicyName === "")) {
+    console.log("Setting active policy to:", policyList[0].policyName);
+    dispatch(setActivePolicyName({
+      policyName: policyList[0].policyName,
+      policyId: policyList[0].policyId,
+      indexName: policyList[0].indexName
+    }));
+  }
+}, [policyList, activePolicyName, dispatch]);
+const messages = useSelector(state => state.chat.chatHistory);
+const messagesEndRef = useRef(null);
+
+// Auto-scroll to bottom when messages update
+const scrollToBottom = () => {
+  messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+};
+
+// Add debugging for messages
+useEffect(() => {
+  console.log("Messages updated:", messages);
+  scrollToBottom();
+}, [messages]);
+
+// Component to render structured AI response
+const StructuredResponse = ({ parsedContent }) => {
+  if (!parsedContent) return null;
+
+  const { decision, amount, justification, matched_clauses } = parsedContent;
+
+  return (
+    <div className="structured-response">
+      <div className="decision-section">
+        <h4 className="decision-title">Decision</h4>
+        <span className={`decision-badge ${decision?.toLowerCase()}`}>
+          {decision?.toUpperCase() || 'N/A'}
+        </span>
+      </div>
+
+      {amount && amount !== 'N/A' && (
+        <div className="amount-section">
+          <h4 className="amount-title">Amount</h4>
+          <p className="amount-value">{amount}</p>
+        </div>
+      )}
+
+      {justification && (
+        <div className="justification-section">
+          <h4 className="justification-title">Justification</h4>
+          <p className="justification-text">{justification}</p>
+        </div>
+      )}
+
+      {matched_clauses && matched_clauses.length > 0 && (
+        <div className="clauses-section">
+          <h4 className="clauses-title">Relevant Policy Clauses</h4>
+          <div className="clauses-list">
+            {matched_clauses.map((clause, index) => (
+              <div key={index} className="clause-item">
+                <div className="clause-text">"{clause.clause}"</div>
+                <div className="clause-role">{clause.role}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
   return (
     <div className='all'>
       <div className={`sideBar ${sidebarOpen ? 'sidebar-open' : 'sidebar-close'}`}>
         <h2>
           Policy List 
         </h2>
-        <div className="create_policy">
-
-          <div className="leftTool">
-              <button onClick={()=>setUploadModalOpen(true)}><Upload/> Upload New Policy</button>
-            </div>
-           <FileUploadModal
-        isOpen={uploadModalOpen}
-        onClose={() => setUploadModalOpen(false)}
-        onUpload={handleFileUpload}
-      />
-        </div>
         <div className="sidebar-content">
 
            {
@@ -305,13 +432,24 @@ const policyList = useSelector(state => state.user.policies);
             <p className="no-files">No Policies uploaded yet</p>
           ) : (
             <div className="files-list">
-              
               {console.log("Policy List:", policyList)}
-              {
-              policyList.map(policy => (
-                <div key={policy.policyId} className="file-item">
-                  <span className="file-name">{policy.policyName}</span>
-                </div>
+              {policyList.map(policy => (
+                <button
+                  key={policy.policyId}
+                  className={`file-item policy-button ${activePolicyName === policy.policyName ? 'active' : ''}`}
+                  onClick={() => {
+                    dispatch(setActivePolicyName({
+                      policyName: policy.policyName,
+                      policyId: policy.policyId,
+                      indexName: policy.indexName
+                    }));
+                  }}
+                >
+                  <div className="file-name">{policy.policyName}</div>
+                  {activePolicyName === policy.policyName && (
+                    <span className="active-indicator">✓</span>
+                  )}
+                </button>
               ))}
             </div>
           )}
@@ -330,6 +468,7 @@ const policyList = useSelector(state => state.user.policies);
 
 
       <div className="right">
+        <Header />
         <div className="chat_container">
 
           <div className="messages-area">
@@ -339,16 +478,21 @@ const policyList = useSelector(state => state.user.policies);
             </div>
           ) : (
             <div className="messages-list">
-              {messages.map(message => (
-                <div key={message.id} className={`message ${message.sender === 'user' ? 'user-message' : 'ai-message'}`}>
+              {messages.map((message, index) => (
+                <div key={message._id || message.id || index} className={`message ${message.role === 'user' ? 'user-message' : 'ai-message'}`}>
                   <div className="message-content">
-                    <p>{message.text}</p>
+                    {message.role === 'assistant' && message.parsedContent ? (
+                      <StructuredResponse parsedContent={message.parsedContent} />
+                    ) : (
+                      <p>{message.contents || message.text || message.message || 'No content'}</p>
+                    )}
                     <span className="message-time">
-                      {new Date(message.timestamp).toLocaleTimeString()}
+                      {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : 'No time'}
                     </span>
                   </div>
                 </div>
               ))}
+              <div ref={messagesEndRef} />
             </div>
           )}
         </div>
@@ -358,12 +502,20 @@ const policyList = useSelector(state => state.user.policies);
               type="text"
                value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
               placeholder="Ask anything"
               className="chat_input"
             />
 
             <div className="tools">
-            
+            <div className="leftTool">
+              <button onClick={()=>setUploadModalOpen(true)}><Upload/></button>
+            </div>
             <div className="rightTool">
               <button
                onClick={handleSendMessage}
@@ -374,7 +526,11 @@ const policyList = useSelector(state => state.user.policies);
             </div>
             </div>
 
-            
+             <FileUploadModal
+        isOpen={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+        onUpload={handleFileUpload}
+      />
           </div>
           
           
