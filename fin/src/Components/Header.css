@@ -6,7 +6,7 @@
 /* background: linear-gradient(120deg, #000000, #8847b8, #2d0638); */
 
     height: 50px;
-    width:100vw;
+    width: 100%;
     border-radius: 5px;
     margin: 0;
     padding: 0;
@@ -15,6 +15,7 @@
     position: sticky;
     top: 0;
     z-index: 1000;
+    flex-shrink: 0;
 }
 
 .bot_name{

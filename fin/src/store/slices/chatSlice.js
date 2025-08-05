@@ -2,7 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     userName : "" , 
-    policyName :"" , 
+    activePolicyName :"" , 
+    activePolicyId : "",
+    indexName : "",
     chatHistory: []
 
 
@@ -14,8 +16,10 @@ export const chatSlice = createSlice({
         setchatUserName: (state, action) => {
             state.userName = action.payload;
         },
-        setPolicyName: (state, action) => {
-            state.policyName = action.payload;
+        setActivePolicyName: (state, action) => {
+            state.activePolicyName = action.payload.policyName;
+            state.activePolicyId = action.payload.policyId; 
+            state.indexName = action.payload.indexName; 
         },
         addChatMessage: (state, action) => {
             state.chatHistory.push(action.payload);
@@ -23,8 +27,11 @@ export const chatSlice = createSlice({
         clearChatHistory: (state) => {
             state.chatHistory = [];
         },
+        setChatHistory: (state, action) => {
+            state.chatHistory = action.payload;
+        },
     },
 }) ; 
 
-export const { setchatUserName, setPolicyName, addChatMessage, clearChatHistory } = chatSlice.actions;
+export const { setchatUserName, setActivePolicyName, addChatMessage, clearChatHistory, setChatHistory } = chatSlice.actions;
 export default chatSlice.reducer;
