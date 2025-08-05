@@ -86,7 +86,7 @@ const FileUploadModal = ({ isOpen, onClose, onUpload }) => {
     <div className="modal-overlay">
       <div className="modal-content">
         <div className="modal-header">
-          <h3>Upload File</h3>
+          <h3>Policy</h3>
           <button onClick={onClose} className="close-btn">×</button>
         </div>
         
