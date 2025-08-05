@@ -34,9 +34,12 @@ export const userSlice = createSlice({
         },
         removePolicy: (state, action) => {
             state.policies = state.policies.filter(policy => policy.policyId !== action.payload);
+        },
+        clearPolicy: (state) => {
+            state.policies = [];
         }
     }
 
 }); 
-export const { setUserName, setUserId, setEmail, addPolicy, removePolicy } = userSlice.actions;
+export const { setUserName, setUserId, setEmail, addPolicy, removePolicy, clearPolicy } = userSlice.actions;
 export default userSlice.reducer;

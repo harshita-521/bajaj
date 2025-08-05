@@ -32,6 +32,7 @@ function Login() {
     dispatch(setUserId(response.data.userId));
     dispatch(setEmail(response.data.email));
     dispatch(setchatUserName(data.userName));
+    navigate('/chat'); 
 
   } catch (err) {
     console.error("Login error:", err.response?.data || err.message);

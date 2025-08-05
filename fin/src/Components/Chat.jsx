@@ -1,4 +1,4 @@
-import React, { useState,useRef } from 'react'
+import React, { useState, useRef, useCallback, useEffect } from 'react'
 // import send from './assets/send.svg';
 // import upload from './assets/upload.svg';
 import sideBar from '../assets/sideBar.svg';
@@ -7,9 +7,51 @@ import { X, Upload, Send, Menu, Edit2, Trash2, File, Image, FileText, Music, Vid
 import './Chat.css';
 import api from '../api'; 
 import { useDispatch , useSelector } from 'react-redux';
+import { addPolicy, clearPolicy } from '../store/slices/userSlice';
+import { addListener } from '@reduxjs/toolkit';
 
  
 function Chat() {
+  // Redux hooks
+  const dispatch = useDispatch();
+  const userState = useSelector(state => state.user);
+  const chatState = useSelector(state => state.chat);
+  
+  const fetchUserData = useCallback(async () => {
+    const userName = userState.userName;
+    try {
+      const res = await api.post('/user/getuser', {
+        userName: userName
+      });
+      
+      // Handle response
+      if (res.data && res.data.policies) {
+        // Clear existing policies
+        dispatch(clearPolicy());
+        
+        // Add each policy to the store
+        res.data.policies.forEach(policy => {
+          dispatch(addPolicy({
+            policyId: policy.policyId,
+            policyName: policy.policyName,
+            indexName: policy.indexName,
+            createdAt: policy.createdAt
+          }));
+        });
+      }
+      console.log("User state updated:", res.data);
+    } catch (err) {
+      console.error("Error fetching user state:", err);
+    }
+  }, [userState.userName, dispatch]);
+
+  // Call the function when component mounts or userName changes
+  useEffect(() => {
+    if (userState.userName) {
+      fetchUserData();
+    }
+  }, [fetchUserData]);
+
   
   const getFileIcon = (fileName) => {
   const extension = fileName.split('.').pop()?.toLowerCase();
@@ -77,7 +119,7 @@ const FileUploadModal = ({ isOpen, onClose, onUpload }) => {
     <div className="modal-overlay">
       <div className="modal-content">
         <div className="modal-header">
-          <h3>Upload File</h3>
+          <h3>Policy List</h3>
           <button onClick={onClose} className="close-btn">×</button>
         </div>
         
