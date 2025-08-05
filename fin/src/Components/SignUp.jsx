@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import api from '../api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './SignUp.css';
 import Spline from '@splinetool/react-spline';
 
@@ -12,7 +12,7 @@ function SignUp() {
 
     const signup = async (data) => {
         try {
-            const response = await api.post('/register', {
+            const response = await api.post('/user/register', {
                  fname: data.fname,
       lname: data.lname,
       userName: data.userName,
@@ -57,7 +57,7 @@ function SignUp() {
 
                         {error && <p className="error">{error}</p>}
 
-                        <p>Already have an account? <a href="/login">Login</a></p>
+                        <p>Already have an account? <Link to="/login">Login</Link></p>
                     </form>
                 </div>
             </div>
