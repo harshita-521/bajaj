@@ -17,9 +17,9 @@ export const chatSlice = createSlice({
             state.userName = action.payload;
         },
         setActivePolicyName: (state, action) => {
-            state.activePolicyName = action.payload;
-            state.activePolicyId = action.payload.policyId  ; 
-            state.indexName = action.payload.indexName  ; 
+            state.activePolicyName = action.payload.policyName;
+            state.activePolicyId = action.payload.policyId; 
+            state.indexName = action.payload.indexName; 
         },
         addChatMessage: (state, action) => {
             state.chatHistory.push(action.payload);
@@ -27,8 +27,11 @@ export const chatSlice = createSlice({
         clearChatHistory: (state) => {
             state.chatHistory = [];
         },
+        setChatHistory: (state, action) => {
+            state.chatHistory = action.payload;
+        },
     },
 }) ; 
 
-export const { setchatUserName, setActivePolicyName, addChatMessage, clearChatHistory } = chatSlice.actions;
+export const { setchatUserName, setActivePolicyName, addChatMessage, clearChatHistory, setChatHistory } = chatSlice.actions;
 export default chatSlice.reducer;
