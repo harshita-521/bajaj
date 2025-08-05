@@ -198,6 +198,7 @@ const FileItem = ({ file, onRename, onDelete }) => {
 
    const [uploadModalOpen,setUploadModalOpen]=useState(false);
 const [sidebarOpen,setSidebarOpen]=useState(false);
+const [files,setFiles]=useState([]); // Fix: Add missing setFiles state
 const [messages, setMessages] = useState([]); // TODO: Replace with chat messages from backend
   const [inputMessage, setInputMessage] = useState('');
 
@@ -278,10 +279,38 @@ const handleSendMessage = async () => {
     }
   }
 };
+const activePolicyName = useSelector(state => state.chat.activePolicyName);
+const activePolicyId = useSelector(state => state.chat.activePolicyId);
+const indexName = useSelector(state => state.chat.indexName);
+const userId = useSelector(state => state.user.userId);
 
+// Fix: Proper useEffect with async function
+useEffect(() => {
+  const fetchChatHistory = async () => {
+    if (activePolicyId && userId) {
+      try {
+        const res = await api.post('/user/chats', {
+          policyId: activePolicyId,
+          userId: userId
+        });
+        console.log("Chat history fetched:", res.data);
+      } catch (err) {
+        console.error("Error fetching chat history:", err);
+      }
+    }
+  };
+
+  fetchChatHistory();
+}, [activePolicyName, activePolicyId, indexName, userId]);
 
 const policyList = useSelector(state => state.user.policies);
-dispatch(setActivePolicyName(policyList[0].policyName , policyList[0].policyId , policyList[0].indexName)); // Set the first policy as active by default
+
+// Fix: Move dispatch inside useEffect to avoid calling it on every render
+useEffect(() => {
+  if (policyList.length > 0 && !activePolicyName) {
+    dispatch(setActivePolicyName(policyList[0].policyName, policyList[0].policyId, policyList[0].indexName));
+  }
+}, [policyList, activePolicyName, dispatch]);
   return (
     <div className='all'>
       <div className={`sideBar ${sidebarOpen ? 'sidebar-open' : 'sidebar-close'}`}>
@@ -295,16 +324,20 @@ dispatch(setActivePolicyName(policyList[0].policyName , policyList[0].policyId ,
             <p className="no-files">No Policies uploaded yet</p>
           ) : (
             <div className="files-list">
-              
               {console.log("Policy List:", policyList)}
-              {
-              policyList.map(policy => (
-                <div key={policy.policyId} className="file-item">
-                  <div className="file-name" onClick={()=>{
-                    dispatch(setActivePolicyName(policy.policyName , policy.policyId , policy.indexName));
-                    
-                  }}>{policy.policyName}</div>
-                </div>
+              {policyList.map(policy => (
+                <button
+                  key={policy.policyId}
+                  className={`file-item policy-button ${activePolicyName === policy.policyName ? 'active' : ''}`}
+                  onClick={() => {
+                    dispatch(setActivePolicyName(policy.policyName, policy.policyId, policy.indexName));
+                  }}
+                >
+                  <div className="file-name">{policy.policyName}</div>
+                  {activePolicyName === policy.policyName && (
+                    <span className="active-indicator">✓</span>
+                  )}
+                </button>
               ))}
             </div>
           )}
