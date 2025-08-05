@@ -14,12 +14,14 @@ function Landing() {
        <div className="auth">
                 <button>
                 <NavLink
-                to="/login">
+                to="/login"
+                className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
                     Login
                 </NavLink>
             </button><button>
                 <NavLink
-                to="/signUp">
+                to="/signUp"
+                className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
                     SignUp
                 </NavLink>
            </button>

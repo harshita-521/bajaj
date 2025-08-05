@@ -74,6 +74,7 @@
   margin-top: 10px;
   padding: 10px 20px;
   background-color: #8847b8;
+  background: linear-gradient(135deg, #2a064f, #8847b8, #2a064f);
   color: white;
   font-weight: bold;
   border: none;

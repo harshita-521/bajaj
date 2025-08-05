@@ -13,6 +13,7 @@
     margin: 0;
     padding: 0;
     background-color: #121212;
+    /* background: linear-gradient(135deg, #1c1c1c, #121212); */
     color: white;
     font-family: 'Segoe UI', sans-serif;
     display: flex;
