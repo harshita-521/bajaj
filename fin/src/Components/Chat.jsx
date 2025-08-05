@@ -243,6 +243,17 @@ const handleSendMessage = async () => {
         <h2>
           Uploaded Files
         </h2>
+        <div className="create_policy">
+
+          <div className="leftTool">
+              <button onClick={()=>setUploadModalOpen(true)}><Upload/> Upload New Policy</button>
+            </div>
+           <FileUploadModal
+        isOpen={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+        onUpload={handleFileUpload}
+      />
+        </div>
         <div className="sidebar-content">
            {files.length === 0 ? (
             <p className="no-files">No files uploaded yet</p>
@@ -306,9 +317,7 @@ const handleSendMessage = async () => {
             />
 
             <div className="tools">
-            <div className="leftTool">
-              <button onClick={()=>setUploadModalOpen(true)}><Upload/></button>
-            </div>
+            
             <div className="rightTool">
               <button
                onClick={handleSendMessage}
@@ -319,11 +328,7 @@ const handleSendMessage = async () => {
             </div>
             </div>
 
-             <FileUploadModal
-        isOpen={uploadModalOpen}
-        onClose={() => setUploadModalOpen(false)}
-        onUpload={handleFileUpload}
-      />
+            
           </div>
           
           
