@@ -8,7 +8,7 @@ import './Chat.css';
 import api from '../api'; 
 import { useDispatch , useSelector } from 'react-redux';
 import { addPolicy, clearPolicy } from '../store/slices/userSlice';
-import { addListener } from '@reduxjs/toolkit';
+import { setActivePolicyName } from '../store/slices/chatSlice';
 
  
 function Chat() {
@@ -281,6 +281,7 @@ const handleSendMessage = async () => {
 
 
 const policyList = useSelector(state => state.user.policies);
+dispatch(setActivePolicyName(policyList[0].policyName , policyList[0].policyId , policyList[0].indexName)); // Set the first policy as active by default
   return (
     <div className='all'>
       <div className={`sideBar ${sidebarOpen ? 'sidebar-open' : 'sidebar-close'}`}>
@@ -299,7 +300,10 @@ const policyList = useSelector(state => state.user.policies);
               {
               policyList.map(policy => (
                 <div key={policy.policyId} className="file-item">
-                  <span className="file-name">{policy.policyName}</span>
+                  <div className="file-name" onClick={()=>{
+                    dispatch(setActivePolicyName(policy.policyName , policy.policyId , policy.indexName));
+                    
+                  }}>{policy.policyName}</div>
                 </div>
               ))}
             </div>
