@@ -1,0 +1,85 @@
+
+.Landing_page {
+    height: 95vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.entry {
+    color: #8847b8;
+    font-size: 40px;
+    font-weight: bold;
+    font-family: monospace;
+    display: flex;
+    margin-bottom: 10px;
+    flex-direction: row;
+    justify-content: center;
+  align-items: center;
+    animation: appear 1s linear 3.5s 1 normal forwards;
+}
+
+@keyframes appear {
+    100% {
+        top: 10%;
+        font-size: 30px;
+    }
+}
+
+.entry1,
+.entry2,
+.entry3 {
+    opacity: 0;
+}
+
+.entry1 {
+    animation: typing 1s linear 0s 1 normal forwards;
+}
+
+.entry2 {
+    animation: typing 1s linear 1.5s 1 normal forwards;
+}
+
+.entry3 {
+    animation: typing 1s linear 3s 1 normal forwards;
+}
+
+@keyframes typing {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.text_landing{
+   margin-bottom: 10px;
+   font-size: 20px;
+}
+
+.auth{
+    
+}
+
+.text_landing, .auth{
+    opacity: 0;
+animation: appearing 1s ease 4.5s 1 normal forwards;
+}
+
+@keyframes appearing {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
