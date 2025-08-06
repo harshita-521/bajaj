@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Spline from '@splinetool/react-spline';
 import { useForm } from "react-hook-form";
-import './login.css';
+import './Login.css';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import api from '../api';
 
