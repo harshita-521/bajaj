@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react'
+import React, { useState, useRef, useCallback, useEffect, act } from 'react'
 // import send from './assets/send.svg';
 // import upload from './assets/upload.svg';
 import sideBar from '../assets/sideBar.svg';
@@ -88,26 +88,54 @@ const FileUploadModal = ({ isOpen, onClose, onUpload }) => {
     }
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (selectedFile && fileName.trim()) {
-      const fileData = {
-        id: Date.now(), // TODO: Replace with proper ID from backend
-        name: fileName,
-        description: description,
-        file: selectedFile,
-        type: selectedFile.type,
-        size: selectedFile.size,
-        uploadedAt: new Date().toISOString()
-      };
+      const formData1 = new FormData();
+      formData1.append('file', selectedFile);
+      formData1.append('policyName', activePolicyName);
+      formData1.append('userName', userState.userName);
+      console.log ( "File Details" , activePolicyName , userState.userName )
+      try {const res1 = await api.post('/user/upload', formData1 , {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+        
+      }
+    );
+      if(res1.status === 200){
+          console.log("File uploaded successfully to MongoDB:", res1.data);
+        }
+      }catch( err){ 
+        console.error("Error uploading Mongo DB file:", err);
+        return;
+      }
+      const formData2 = new FormData();
+      formData2.append('file', selectedFile);
+      formData2.append('indexName', indexName);
+      try {
+        const res2 = await api.post('/vdb/upload', formData2, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        if (res2.status === 200) {
+          console.log("File uploaded successfully to Pinecone:", res2.data);
+          setFileName('');
+          
+        }
+      } catch (err) {
+        console.error("Error uploading Pinecone file:", err);
+        return;
+      }
+
+        
       
-      // TODO: Integrate with your MongoDB backend
-      // uploadFileToBackend(fileData);
       
-      onUpload(fileData);
+     
       
       // Reset form
       setFileName('');
-      setDescription('');
+
       setSelectedFile(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -149,16 +177,7 @@ const FileUploadModal = ({ isOpen, onClose, onUpload }) => {
             />
           </div>
           
-          <div className="form-group">
-            <label>Description (Optional)</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter file description"
-              rows={3}
-              className="textarea-input"
-            />
-          </div>
+          
         </div>
         
         <div className="modal-footer">
@@ -315,6 +334,9 @@ useEffect(() => {
       try {
         console.log("Fetching chat history with:", activePolicyName, activePolicyId, indexName, userId);
         
+        // Clear current chat history first
+        dispatch(clearChatHistory());
+        
         const res = await api.post('/user/chats', {
           policyId: activePolicyId,
           userId: userId
@@ -335,14 +357,19 @@ useEffect(() => {
 
       } catch (err) {
         console.error("Error fetching chat history:", err);
+        // Clear chat history on error
+        dispatch(clearChatHistory());
       }
+    } else {
+      // Clear chat history if no active policy or user
+      dispatch(clearChatHistory());
     }
   };
 
   fetchChatHistory();
   
 
-}, [activePolicyName, activePolicyId, indexName, userId]); // Remove dispatch from dependencies
+}, [activePolicyName, activePolicyId, indexName, userId, dispatch]); // Add dispatch back to dependencies
 
 const policyList = useSelector(state => state.user.policies);
 
@@ -419,6 +446,37 @@ const StructuredResponse = ({ parsedContent }) => {
     </div>
   );
 };
+const [display , setDisplay] = useState(false);
+const [uploadPolicy , setUploadPolicy] = useState({name: ""} );
+const [uploadIndexName , setUploadIndexName] = useState("");
+const handleAddPolicy = async () => {
+  console.log ("New policy name:", uploadPolicy);
+  try{
+    const res = await api.post( '/user/create-policy' , 
+      {
+        policyName: uploadPolicy.name,
+        userName: userState.userName // Ensure userName is passed
+      }
+    )
+    try{const res2 = await api.post('/vdb/create-index',{
+      indexName : res.data.indexName
+    });}catch (err) {
+      console.error("Error creating index:", err);
+    }
+
+    setUploadIndexName(res.data.indexName);
+    setDisplay(false);
+    // Reset the input
+    setUploadPolicy({name: ""});
+    console.log( "indexName:", res.data.indexName);
+    
+    // Call fetchUserData to refresh the policy list
+    await fetchUserData();
+    
+  } catch (error) {
+    console.error("Error adding policy:", error);
+  }
+}
   return (
     <div className='all'>
      
@@ -452,8 +510,33 @@ const StructuredResponse = ({ parsedContent }) => {
                   )}
                 </button>
               ))}
+              <div className='file-item policy-button' 
+              onClick={() => {
+                setDisplay(true);
+              }}
+              > + </div>
             </div>
           )}
+          {
+            display && (
+              <div>
+                
+                {/* Add your component content here */}
+                {
+                  <div>
+                    <input type="text" placeholder="Enter policy name" 
+                    value={uploadPolicy.name}
+                    onChange={(e) => setUploadPolicy({name: e.target.value})}
+                    />
+                    <br/>
+                    <button 
+                    onClick={handleAddPolicy}
+                    > Add Policy </button>
+                  </div>
+                }
+              </div>
+            )}
+          
         </div>
       </div>
 
