@@ -122,7 +122,7 @@
 }
 
 .sidebar-open{
-    width:30vw;
+    width:17vw;
     animation: opening 0.2s ease 1 normal;
 }
 
@@ -678,4 +678,94 @@
     border: none;
     outline: none;
 
+}
+
+/* Styling for the add new policy button */
+.add-new-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    border: 2px dashed #c084fc;
+    border-radius: 8px;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.add-new-btn:hover {
+    background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+    border-color: #d8b4fe;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.add-new-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+}
+
+/* Styling for the policy input field */
+.policy-input {
+    width: 100%;
+    padding: 12px 16px;
+    margin: 20px 0 10px 0;
+    background-color: #2a2a2a;
+    border: 2px solid #4a4a4a;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-family: 'Segoe UI', sans-serif;
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.policy-input:focus {
+    border-color: #8b5cf6;
+    background-color: #353535;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.policy-input::placeholder {
+    color: #9ca3af;
+    opacity: 0.8;
+}
+
+.policy-input:hover {
+    border-color: #6b6b6b;
+    background-color: #323232;
+}
+
+/* Styling for the add policy button */
+.add-policy-button {
+    display: block;
+    margin: 15px auto 10px auto;
+    padding: 10px 20px;
+    background-color: #8847b8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.add-policy-button:hover {
+    background-color: #a065cc;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(136, 71, 184, 0.4);
+}
+
+.add-policy-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(136, 71, 184, 0.3);
 }
