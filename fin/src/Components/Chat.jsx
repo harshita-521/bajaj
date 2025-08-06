@@ -527,14 +527,14 @@ const StructuredResponse = ({ parsedContent }) => {
             </div>
             </div>
 
+          </div>
+          
+          
              <FileUploadModal
         isOpen={uploadModalOpen}
         onClose={() => setUploadModalOpen(false)}
         onUpload={handleFileUpload}
       />
-          </div>
-          
-          
         </div>
         
       </div>
