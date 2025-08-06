@@ -120,6 +120,7 @@ const FileUploadModal = ({ isOpen, onClose, onUpload }) => {
         });
         if (res2.status === 200) {
           console.log("File uploaded successfully to Pinecone:", res2.data);
+          alert("File uploaded successfully completed");
           setFileName('');
           
         }
@@ -490,7 +491,7 @@ const handleAddPolicy = async () => {
            policyList.length === 0 ? (
             <div>
               <p className="no-files">No Policies uploaded yet</p>
-              <div className='file-item policy-button' 
+              <div className='add-new-btn' 
                 onClick={() => {
                   setDisplay(true);
                 }}
@@ -517,7 +518,7 @@ const handleAddPolicy = async () => {
                   )}
                 </button>
               ))}
-              <div className='file-item policy-button' 
+              <div className='add-new-btn' 
               onClick={() => {
                 setDisplay(true);
               }}
@@ -531,12 +532,13 @@ const handleAddPolicy = async () => {
                 {/* Add your component content here */}
                 {
                   <div>
-                    <input type="text" placeholder="Enter policy name" 
+                    <input className='policy-input' type="text" placeholder="Enter policy name" 
                     value={uploadPolicy.name}
                     onChange={(e) => setUploadPolicy({name: e.target.value})}
                     />
                     <br/>
                     <button 
+                    className="add-policy-button"
                     onClick={handleAddPolicy}
                     > Add Policy </button>
                   </div>
