@@ -488,7 +488,14 @@ const handleAddPolicy = async () => {
 
            {
            policyList.length === 0 ? (
-            <p className="no-files">No Policies uploaded yet</p>
+            <div>
+              <p className="no-files">No Policies uploaded yet</p>
+              <div className='file-item policy-button' 
+                onClick={() => {
+                  setDisplay(true);
+                }}
+                > + </div>
+            </div>
           ) : (
             <div className="files-list">
               {console.log("Policy List:", policyList)}
